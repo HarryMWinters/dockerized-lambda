@@ -1,0 +1,71 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.4.0
+    hooks:
+    - id: check-added-large-files
+    - id: check-case-conflict
+    - id: check-docstring-first
+    - id: check-executables-have-shebangs
+    - id: check-toml
+    - id: check-merge-conflict
+    - id: check-yaml
+    - id: debug-statements
+    - id: end-of-file-fixer
+    - id: mixed-line-ending
+    - id: sort-simple-yaml
+    - id: trailing-whitespace
+      exclude: ^README.rst$
+  - repo: local
+    hooks:
+    - id: todo
+      name: Check TODO
+      language: pygrep
+      entry: WIP
+      args: [-i]
+      types: [text]
+      exclude: ^(.pre-commit-config.yaml|.github/workflows/test.yml)$
+    - id: pytest
+      name: pytest quick
+      language: python
+      entry: pytest
+      args: ['-qq', '--durations=1', '-k=not slow']
+      types: [python]
+      pass_filenames: false
+      additional_dependencies:
+      - numpy
+      - pandas
+      - pytest-timeout
+      - pytest-asyncio
+  - repo: https://github.com/asottile/seed-isort-config
+    rev: v2.2.0
+    hooks:
+      - id: seed-isort-config
+        language_version: python3.8
+  - repo: https://github.com/timothycrosley/isort
+    rev:  5.7.0
+    hooks:
+      - id: isort
+  - repo: https://github.com/psf/black
+    rev: 20.8b1
+    hooks:
+      - id: black
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v0.812
+    hooks:
+      - id: mypy
+  - repo: https://gitlab.com/pycqa/flake8
+    rev: 3.8.4
+    hooks:
+      - id: flake8
+  - repo: git://github.com/pre-commit/pre-commit-hooks
+    rev: v3.4.0
+    hooks:
+      - id: check-merge-conflict
+      - id: check-yaml
+        args: ['--unsafe']
+      - id: trailing-whitespace
+  - repo: git://github.com/igorshubovych/markdownlint-cli
+    rev: v0.27.1
+    hooks:
+      - id: markdownlint
+        entry: markdownlint --ignore .github/pull_request_template.md

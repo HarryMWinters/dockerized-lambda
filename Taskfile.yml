@@ -4,7 +4,7 @@ vars:
   PROJECT: "dockerized-lambda"
   GIT_HASH:
     sh: git rev-parse HEAD
-  
+
   # This is how poetry knows to install from a private PyPI
   # Note the it will fall back to the public PyPI.
   PyPI_USERNAME:
@@ -25,7 +25,7 @@ tasks:
     desc: 'Build docker image (does not publish).'
     cmds:
       - echo [INFO] building image for {{.PROJECT}}
-      - docker build 
+      - docker build
         --tag {{.PROJECT}}-{{.GIT_HASH}}
         --build-arg PyPI_DOMAIN={{.PyPI_DOMAIN}}
         --build-arg PyPI_USERNAME={{.PyPI_USERNAME}}
@@ -37,7 +37,7 @@ tasks:
     deps: [build-docker]
     cmds:
       - docker run -p 9001:8080 {{.PROJECT}}-{{.GIT_HASH}}
-    
+
 
   set-up-code-artifact:
     # TODO modify poetry instead of pip
@@ -55,10 +55,17 @@ tasks:
     cmds:
       - poetry run pytest
 
+  pre-commit:
+    desc: Run pre-commit on all files in the repo
+    cmds:
+      - pre-commit install
+      - pre-commit run --all-files
+
   ci:
     desc: 'project ci steps'
     cmds:
       - echo [INFO] running {{.PROJECT}} ci
+      - task: pre-commit
       - task: unit
       - task: build-docker
       - task: publish-image
@@ -73,4 +80,3 @@ tasks:
     desc: 'Update lambda function to use latest image.'
     cmds:
       - echo [INFO] Not Implemented
-
