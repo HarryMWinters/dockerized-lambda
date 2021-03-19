@@ -1,2 +1,5 @@
+from app.main import handler
+
+
 def test_main_is_importable():
-    import app.main
+    handler({}, {})

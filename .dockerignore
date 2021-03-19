@@ -1,0 +1,5 @@
+tests/
+.gitignore
+Taskfile.yml
+.*
+__pycache__

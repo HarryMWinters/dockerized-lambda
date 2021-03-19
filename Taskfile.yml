@@ -4,16 +4,25 @@ vars:
   PROJECT: "dockerized-lambda"
   GIT_HASH:
     sh: git rev-parse HEAD
+  
+  # This is how poetry knows to install from a private PyPI
+  # Note the it will fall back to the public PyPI.
+  PyPI_USERNAME:
+  PyPI_PASSWORD:
+  PyPI_DOMAIN:
+
+  # These are used to auto-magically configure
+  # pip or twine to take to AWS CodeArtifact.
+  CODE_ARTIFACT_DOMAIN: ""
   CODE_ARTIFACT_REPOSITORY: FOO_ARTIFACT_REPO
   CODE_ARTIFACT_TOOL: pip
-  CODE_ARTIFACT_DOMAIN: ""
   CODE_ARTIFACT_DOMAIN_OWNER: ""
   CODE_ARTIFACT_REGION: us-west-2
 
 
 tasks:
   build-docker:
-    desc: Build docker image (does not publish).
+    desc: 'Build docker image (does not publish).'
     cmds:
       - echo [INFO] building image for {{.PROJECT}}
       - docker build 
@@ -21,16 +30,18 @@ tasks:
         --build-arg PyPI_DOMAIN={{.PyPI_DOMAIN}}
         --build-arg PyPI_USERNAME={{.PyPI_USERNAME}}
         --build-arg PyPI_PASSWORD={{.PyPI_PASSWORD}} .
+      # TODO: Optionally extract PyPI vars from aws codeartifact call
 
   run-docker:
-    desc: "Run the server as a container in your local docker. Requires active AWS session"
+    desc: 'Run the server as a container in your local docker. Requires active AWS session'
     deps: [build-docker]
     cmds:
-      - docker run {{.PROJECT}}-{{.GIT_HASH}}
+      - docker run -p 9001:8080 {{.PROJECT}}-{{.GIT_HASH}}
     
 
   set-up-code-artifact:
-    desc: Configure pip to use CodeArtifact.
+    # TODO modify poetry instead of pip
+    desc: 'Configure poetry to use CodeArtifact.'
     cmds:
       - aws codeartifact login \
         --tool {{.CODE_ARTIFACT_TOOL}} \
@@ -50,5 +61,16 @@ tasks:
       - echo [INFO] running {{.PROJECT}} ci
       - task: unit
       - task: build-docker
+      - task: publish-image
+      - task: deploy-lambda
 
+  publish:
+    desc: 'publish image to registry.'
+    cmds:
+      - echo [INFO] Not Implemented
+
+  deploy-lambda:
+    desc: 'Update lambda function to use latest image.'
+    cmds:
+      - echo [INFO] Not Implemented
 
