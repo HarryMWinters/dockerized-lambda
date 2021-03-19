@@ -1,0 +1,54 @@
+version: 3
+
+vars:
+  PROJECT: "dockerized-lambda"
+  GIT_HASH:
+    sh: git rev-parse HEAD
+  CODE_ARTIFACT_REPOSITORY: FOO_ARTIFACT_REPO
+  CODE_ARTIFACT_TOOL: pip
+  CODE_ARTIFACT_DOMAIN: ""
+  CODE_ARTIFACT_DOMAIN_OWNER: ""
+  CODE_ARTIFACT_REGION: us-west-2
+
+
+tasks:
+  build-docker:
+    desc: Build docker image (does not publish).
+    cmds:
+      - echo [INFO] building image for {{.PROJECT}}
+      - docker build 
+        --tag {{.PROJECT}}-{{.GIT_HASH}}
+        --build-arg PyPI_DOMAIN={{.PyPI_DOMAIN}}
+        --build-arg PyPI_USERNAME={{.PyPI_USERNAME}}
+        --build-arg PyPI_PASSWORD={{.PyPI_PASSWORD}} .
+
+  run-docker:
+    desc: "Run the server as a container in your local docker. Requires active AWS session"
+    deps: [build-docker]
+    cmds:
+      - docker run {{.PROJECT}}-{{.GIT_HASH}}
+    
+
+  set-up-code-artifact:
+    desc: Configure pip to use CodeArtifact.
+    cmds:
+      - aws codeartifact login \
+        --tool {{.CODE_ARTIFACT_TOOL}} \
+        --repository {{.CODE_ARTIFACT_REPOSITORY}} \
+        --domain {{.CODE_ARTIFACT_DOMAIN}} \
+        --domain-owner {{.CODE_ARTIFACT_DOMAIN_OWNER}} \
+        --region {{.CODE_ARTIFACT_REGION}}
+
+  unit:
+    desc: 'project unit-tests step'
+    cmds:
+      - poetry run pytest
+
+  ci:
+    desc: 'project ci steps'
+    cmds:
+      - echo [INFO] running {{.PROJECT}} ci
+      - task: unit
+      - task: build-docker
+
+
