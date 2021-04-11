@@ -18,6 +18,9 @@ vars:
   CODE_ARTIFACT_TOOL: pip
   CODE_ARTIFACT_DOMAIN_OWNER: ""
   CODE_ARTIFACT_REGION: us-west-2
+  # Necessary to add add the poetry executable to the
+  # PATH from within Task.
+  POETRY: "{{.HOME}}/.poetry/bin/poetry"
 
 
 tasks:
@@ -54,20 +57,21 @@ tasks:
     desc: 'project unit-tests step'
     deps: [create-virtual-env]
     cmds:
-      - poetry run pytest
+      - "{{.POETRY}} run pytest"
 
   pre-commit:
     desc: Run pre-commit on all files in the repo
     deps: [create-virtual-env]
     cmds:
-      - poetry run pre-commit install
-      - poetry run pre-commit run --all-files
+      - "{{.POETRY}} run pre-commit install"
+      - "{{.POETRY}} run pre-commit run --all-files"
 
   create-virtual-env:
     desc: Create virtual environment for development and testing.
     deps: [install-poetry]
     cmds:
-      - poetry install
+      - "{{.POETRY}} install"
+
 
   install-poetry:
     desc: "Install poetry package manager."
@@ -75,7 +79,7 @@ tasks:
       # TODO find a way to install poetry that isn't running a script from the internet.
       - curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 -
     status:
-      - poetry --version
+      - "{{.POETRY}}  --version"
     generates:
       - $HOME/.poetry/env
 
