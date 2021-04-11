@@ -52,14 +52,32 @@ tasks:
 
   unit:
     desc: 'project unit-tests step'
+    deps: [create-virtual-env]
     cmds:
       - poetry run pytest
 
   pre-commit:
     desc: Run pre-commit on all files in the repo
+    deps: [create-virtual-env]
     cmds:
-      - pre-commit install
-      - pre-commit run --all-files
+      - poetry run pre-commit install
+      - poetry run pre-commit run --all-files
+
+  create-virtual-env:
+    desc: Create virtual environment for development and testing.
+    deps: [install-poetry]
+    cmds:
+      - poetry install
+
+  install-poetry:
+    desc: "Install poetry package manager."
+    cmds:
+      # TODO find a way to install poetry that isn't running a script from the internet.
+      - curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 -
+    status:
+      - poetry --version
+    generates:
+      - $HOME/.poetry/env
 
   ci:
     desc: 'project ci steps'
