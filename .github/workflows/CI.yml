@@ -14,8 +14,8 @@ jobs:
         uses: Arduino/actions/setup-taskfile@master
         with:
           version: 3.x
-      - name: Install Poetry
-        uses: snok/install-poetry@v1.1.2
+      - name: Update python distutils
+        run: sudo apt update && sudo apt-get install python3.8-distutils -y
       - uses: actions/checkout@v2
       - name: Run pre-commit analysis
         run: task pre-commit
@@ -30,9 +30,8 @@ jobs:
         uses: Arduino/actions/setup-taskfile@master
         with:
           version: 3.x
-      - name: Install Poetry
-        uses: snok/install-poetry@v1.1.2
-      - name: Check out repo
+      - name: Update python distutils
+        run: sudo apt update && sudo apt-get install python3.8-distutils -y
       - uses: actions/checkout@v2
       - name: Run unit tests
         run: task unit
