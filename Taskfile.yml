@@ -60,14 +60,14 @@ tasks:
     desc: Run pre-commit on all files in the repo
     deps: [create-virtual-env]
     cmds:
-      - poetry run pre-commit install
-      - poetry run pre-commit run --all-files
+      - $HOME/.poetry/bin/poetry run pre-commit install
+      - $HOME/.poetry/bin/poetry run pre-commit run --all-files
 
   create-virtual-env:
     desc: Create virtual environment for development and testing.
     deps: [install-poetry]
     cmds:
-      - poetry install
+      - $HOME/.poetry/bin/poetry install
 
   install-poetry:
     desc: "Install poetry package manager."
