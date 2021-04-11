@@ -1,0 +1,29 @@
+# Runs unit tests and pre-commit on all pushed commits.
+
+name: CI
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  run-pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Task
+        uses: Arduino/actions/setup-taskfile@master
+        with:
+          version: 3.x
+      - name: Run pre-commit analysis
+        run: task pre-commit
+
+  run-unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Task
+        uses: Arduino/actions/setup-taskfile@master
+        with:
+          version: 3.x
+      - name: Run unit tests
+        run: task unit
