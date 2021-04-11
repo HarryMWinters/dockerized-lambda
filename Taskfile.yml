@@ -19,6 +19,11 @@ vars:
   CODE_ARTIFACT_DOMAIN_OWNER: ""
   CODE_ARTIFACT_REGION: us-west-2
 
+env:
+  # Necessary to add add the poetry executable to the
+  # PATH from within Task.
+  PATH:
+    sh: echo "$PATH:$HOME/.poetry/bin"
 
 tasks:
   build-docker:
@@ -54,20 +59,20 @@ tasks:
     desc: 'project unit-tests step'
     deps: [create-virtual-env]
     cmds:
-      - $HOME/.poetry/bin/poetry run pytest
+      - poetry run pytest
 
   pre-commit:
     desc: Run pre-commit on all files in the repo
     deps: [create-virtual-env]
     cmds:
-      - $HOME/.poetry/bin/poetry run pre-commit install
-      - $HOME/.poetry/bin/poetry run pre-commit run --all-files
+      - poetry run pre-commit install
+      - poetry run pre-commit run --all-files
 
   create-virtual-env:
     desc: Create virtual environment for development and testing.
     deps: [install-poetry]
     cmds:
-      - $HOME/.poetry/bin/poetry install
+      - poetry install
 
   install-poetry:
     desc: "Install poetry package manager."
