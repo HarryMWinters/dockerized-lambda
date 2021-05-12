@@ -23,6 +23,7 @@ RUN poetry config http-basic.private_pypi PyPI_USERNAME PyPI_PASSWORD
 # Install deps
 COPY poetry.lock poetry.lock
 COPY pyproject.toml pyproject.toml
+RUN poetry config virtualenvs.create false
 RUN poetry install --no-dev
 
 COPY app .
